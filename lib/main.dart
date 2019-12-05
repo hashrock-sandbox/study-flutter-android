@@ -71,6 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            this._counter % 2 == 0
+                ? Image.asset("images/walk_0.png")
+                : Image.asset("images/walk_1.png"),
             Text(
               'Step Counter :)',
             ),
