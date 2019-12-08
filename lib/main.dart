@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_android/android_hardware.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pedometer/pedometer.dart';
+import 'dart:async';
 
 void main() => runApp(MyApp());
 
@@ -28,6 +30,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String _stepCountValue = 'Unknown';
+  StreamSubscription<int> _subscription;
+
+  void _onData(int stepCountValue) async {
+    setState(() {
+      _stepCountValue = "$stepCountValue";
+    });
+  }
 
   void _incrementCounter() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -59,6 +69,17 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _initPlatformState();
+    setUpPedometer();
+  }
+
+  void _onDone() => print("Finished pedometer tracking");
+
+  void _onError(error) => print("Flutter Pedometer Error: $error");
+
+  void setUpPedometer() {
+    Pedometer pedometer = new Pedometer();
+    _subscription = pedometer.pedometerStream.listen(_onData,
+        onError: _onError, onDone: _onDone, cancelOnError: true);
   }
 
   @override
@@ -75,11 +96,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? Image.asset("images/walk_0.png")
                 : Image.asset("images/walk_1.png"),
             Text(
-              'Step Counter :)',
-            ),
-            Text(
-              '$_counter',
+              '$_stepCountValue',
               style: Theme.of(context).textTheme.display1,
+            ),
+            RaisedButton(
+              onPressed: () {},
+              child: Text("テクポをあげる"),
             ),
           ],
         ),
