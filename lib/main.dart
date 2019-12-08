@@ -40,7 +40,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onData(int stepCountValue) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      // _stepCountValue = "$stepCountValue";
       _stepsFromBoot = stepCountValue;
     });
     await saveSharedPrefs(prefs);
@@ -111,6 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    int diff = _stepsFromBoot - _stepsFromBootUsed;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -123,11 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? Image.asset("images/walk_0.png")
                 : Image.asset("images/walk_1.png"),
             Text(
-              '$_stepsFromBoot steps',
+              '$diff 歩',
               style: Theme.of(context).textTheme.display1,
             ),
             Text(
-              '$_tekupo tekupo',
+              '$_tekupo テクポ',
               style: Theme.of(context).textTheme.display1,
             ),
             RaisedButton(
