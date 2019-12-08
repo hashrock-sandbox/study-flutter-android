@@ -10,11 +10,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Study 001',
+      title: 'てくてく活動 誕生日Ver',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.pink,
       ),
-      home: MyHomePage(title: 'Study 001'),
+      home: MyHomePage(title: 'てくてく活動 ～誕生日Ver～'),
     );
   }
 }
@@ -30,13 +30,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  String _stepCountValue = 'Unknown';
+  int _stepsFromBoot = 0;
+  int _stepsFromBootUsed = 0;
+  int _tekupo = 0;
+
+  // String _stepCountValue = 'Unknown';
   StreamSubscription<int> _subscription;
 
   void _onData(int stepCountValue) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _stepCountValue = "$stepCountValue";
+      // _stepCountValue = "$stepCountValue";
+      _stepsFromBoot = stepCountValue;
     });
+    await saveSharedPrefs(prefs);
   }
 
   void _incrementCounter() async {
@@ -44,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
-    await prefs.setInt('counter', _counter);
+    await saveSharedPrefs(prefs);
   }
 
   Future<void> _initPlatformState() async {
@@ -55,6 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     setState(() {
       _counter = counter;
+      _stepsFromBoot = (prefs.getInt('stepsFromBoot') ?? 0);
+      _stepsFromBootUsed = (prefs.getInt('stepsFromBootUsed') ?? 0);
+      _tekupo = (prefs.getInt('tekupo') ?? 0);
     });
 
     var events = await sensor.subscribe();
@@ -63,6 +73,23 @@ class _MyHomePageState extends State<MyHomePage> {
         _incrementCounter();
       });
     });
+  }
+
+  void onUseTekupo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      int diff = _stepsFromBoot - _stepsFromBootUsed;
+      _stepsFromBootUsed = _stepsFromBoot;
+      _tekupo += diff;
+    });
+    await saveSharedPrefs(prefs);
+  }
+
+  Future saveSharedPrefs(SharedPreferences prefs) async {
+    await prefs.setInt('counter', _counter);
+    await prefs.setInt('stepsFromBoot', _stepsFromBoot);
+    await prefs.setInt('stepsFromBootUsed', _stepsFromBootUsed);
+    await prefs.setInt('tekupo', _tekupo);
   }
 
   @override
@@ -96,11 +123,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 ? Image.asset("images/walk_0.png")
                 : Image.asset("images/walk_1.png"),
             Text(
-              '$_stepCountValue',
+              '$_stepsFromBoot steps',
+              style: Theme.of(context).textTheme.display1,
+            ),
+            Text(
+              '$_tekupo tekupo',
               style: Theme.of(context).textTheme.display1,
             ),
             RaisedButton(
-              onPressed: () {},
+              onPressed: onUseTekupo,
               child: Text("テクポをあげる"),
             ),
           ],
