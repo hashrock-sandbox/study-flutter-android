@@ -65,5 +65,8 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.io/custom-fonts/#from-packages
   assets:
-    - images/walk_0.png
-    - images/walk_1.png
+    - images/p-walk-1.gif
+    - images/p-walk-2.gif
+    - images/p-normal.gif
+    - images/p-joy.gif
+    - images/p-hangry.gif
